@@ -519,12 +519,13 @@ describe("agents.files.get/set symlink safety", () => {
   it("rejects agents.files.get when allowlisted file symlink escapes workspace", async () => {
     const workspace = "/workspace/test-agent";
     const candidate = path.resolve(workspace, "AGENTS.md");
+    const escapedTarget = path.resolve(workspace, "..", "..", "outside", "secret.txt");
     mocks.fsRealpath.mockImplementation(async (p: string) => {
       if (p === workspace) {
         return workspace;
       }
       if (p === candidate) {
-        return "/outside/secret.txt";
+        return escapedTarget;
       }
       return p;
     });
@@ -552,12 +553,13 @@ describe("agents.files.get/set symlink safety", () => {
   it("rejects agents.files.set when allowlisted file symlink escapes workspace", async () => {
     const workspace = "/workspace/test-agent";
     const candidate = path.resolve(workspace, "AGENTS.md");
+    const escapedTarget = path.resolve(workspace, "..", "..", "outside", "secret.txt");
     mocks.fsRealpath.mockImplementation(async (p: string) => {
       if (p === workspace) {
         return workspace;
       }
       if (p === candidate) {
-        return "/outside/secret.txt";
+        return escapedTarget;
       }
       return p;
     });

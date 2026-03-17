@@ -394,7 +394,9 @@ export function resolveMemorySearchConfig(
     })
   ) {
     throw new Error(
-      'agents.*.memorySearch.multimodal requires memorySearch.provider = "gemini" and model = "gemini-embedding-2-preview".',
+      "agents.*.memorySearch.multimodal requires a provider and model that supports multimodal embeddings. " +
+        'Supported: provider = "gemini" with model = "gemini-embedding-2-preview"; ' +
+        'or provider = "openai" with a multimodal-capable model (e.g. "multimodal-embedding-v1", "qwen3-vl-embedding").',
     );
   }
   if (multimodalActive && resolved.fallback !== "none") {

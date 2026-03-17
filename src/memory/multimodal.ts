@@ -107,12 +107,31 @@ export function normalizeGeminiEmbeddingModelForMemory(model: string): string {
   return trimmed.replace(/^models\//, "").replace(/^(gemini|google)\//, "");
 }
 
+export function normalizeDashScopeEmbeddingModelForMemory(model: string): string {
+  const trimmed = model.trim();
+  if (!trimmed) {
+    return "";
+  }
+  return trimmed.replace(/^dashscope\//, "").replace(/^openai\//, "");
+}
+
+// OpenAI provider models (served via DashScope) that support multimodal embeddings.
+export const OPENAI_MULTIMODAL_EMBEDDING_MODEL_NAMES = new Set([
+  "multimodal-embedding-v1",
+  "qwen3-vl-embedding",
+]);
+
 export function supportsMemoryMultimodalEmbeddings(params: {
   provider: string;
   model: string;
 }): boolean {
-  if (params.provider !== "gemini") {
-    return false;
+  if (params.provider === "gemini") {
+    return normalizeGeminiEmbeddingModelForMemory(params.model) === "gemini-embedding-2-preview";
   }
-  return normalizeGeminiEmbeddingModelForMemory(params.model) === "gemini-embedding-2-preview";
+  if (params.provider === "openai") {
+    return OPENAI_MULTIMODAL_EMBEDDING_MODEL_NAMES.has(
+      normalizeDashScopeEmbeddingModelForMemory(params.model),
+    );
+  }
+  return false;
 }
